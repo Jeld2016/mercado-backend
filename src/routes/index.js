@@ -89,7 +89,7 @@ const proxyConfig = {
 let myHeaders = new Headers();
 const headers = {
   "Content-Type": "application/json",
-  Authorization: `Bearer APP_USR-1199660678088357-121101-3d693a8c1c08f4761213716ed7172809-1737844049`,
+  Authorization: `Bearer APP_USR-5074710933028386-121123-263c725b176c39cc98cf18dffe47c9f1-1737844049`,
 };
 const urlencoded = new URLSearchParams();
 
@@ -148,10 +148,14 @@ db.query('SELECT * FROM clientes where seller_id = ?', [tienda],
 /*Crea una nueva instancia de Headers con el token que se le envia
 Parametro: Token */
 function setHeaders(token){
-  myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-  myHeaders.append("Authorization", `Bearer ${token}`);
-  config = { myHeaders}
+  myHeaders = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+  // myHeaders = new Headers();
+  // myHeaders.append("Content-Type", "application/json");
+  // myHeaders.append("Authorization", `Bearer ${token}`);
+  // config = { myHeaders}
   return true;
 }
 
