@@ -2,9 +2,11 @@
   "name": "webscraping",
   "version": "1.0.0",
   "main": "index.js",
-  "dev": "nodemon src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon src/index.js",
+    "build": "next build",
+    "test": "jest"
   },
   "keywords": [],
   "author": "JELD",
