@@ -67,10 +67,10 @@ const stringList = [
 router.use(bodyParser.urlencoded({ extended: true }));
 
 const db = mysql.createConnection({
-    host: '50.31.177.194',
-    user: 'obhczrkx_admin_mercado',
-    password: 'Mercado89Libre',
-    database: 'obhczrkx_apiMercado'
+    host: '86.38.202.103',
+    user: 'u443699343_mercado',
+    password: 'Tokio123%#$',
+    database: 'u443699343_API_MERCADO'
   });
 
 const proxyConfig = {
