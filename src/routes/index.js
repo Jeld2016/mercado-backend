@@ -67,10 +67,10 @@ const stringList = [
 router.use(bodyParser.urlencoded({ extended: true }));
 
 const db = mysql.createConnection({
-    host: '86.38.202.103',
-    user: 'u443699343_mercado',
-    password: 'Tokio123%#$',
-    database: 'u443699343_API_MERCADO'
+    host: '50.31.177.194',
+    user: 'obhczrkx_admin_mercado',
+    password: 'Mercado89Libre',
+    database: 'obhczrkx_apiMercado'
   });
 
 const proxyConfig = {
@@ -89,7 +89,7 @@ const proxyConfig = {
 let myHeaders = new Headers();
 const headers = {
   "Content-Type": "application/json",
-  Authorization: `Bearer APP_USR-5074710933028386-121123-263c725b176c39cc98cf18dffe47c9f1-1737844049`,
+  Authorization: `Bearer APP_USR-1199660678088357-122218-c0cff2f53f77415dcb8b31c55a8eb04e-1737844049`,
 };
 const urlencoded = new URLSearchParams();
 
@@ -117,7 +117,7 @@ router.get('/iniciar/:tienda', async (req, res) => {
             setHeaders(resultado.access_token);
         else
             getToken(resultado.client_id,resultado.client_secret,resultado.refresh_token);
-         res.json({message: "Consulta exitosa"});
+         res.json({message: resultado.client_id});
     });    
  
 })
@@ -664,7 +664,7 @@ router.get('/consulta/:ASIN', async (req, res) => {
   }
 });
 
-router.post('/productos', async (req, res) => {
+/*router.post('/productos', async (req, res) => {
   const { link } = req.body;
   let totalAsins = [];
   console.log("link",link)
@@ -672,6 +672,19 @@ router.post('/productos', async (req, res) => {
     const asins = await obtenerASINsYUltimaPagina(link, 1,totalAsins);
     res.json({ asins });
   } catch (error) {
+    res.status(500).json({ error: 'Error al obtener productos' });
+  }
+});*/
+
+router.post('/productos', async (req, res) => {
+  const {link} = req.body; // Obtener las variables del cuerpo de la solicitud
+  console.log("url",link)
+  try {
+    // const asins = await obtenerASINsYUltimaPagina(url, parseInt(paginaActual, 10));
+    const asins = await navigateAmazon(link, 1);
+    res.json({ asins }); // Devolver los ASINs como respuesta en formato JSON
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
     res.status(500).json({ error: 'Error al obtener productos' });
   }
 });
@@ -856,6 +869,7 @@ router.get('/atributos/:categoria', async (req, res) => {
     return { error: error.message };
   }
 }*/
+
   async function amazon(ASIN) {
     let images = [];
     const amazonUrl = `https://www.amazon.com/dp/${ASIN}?psc=1&language=en_US&ref_=nav_custrec_signin&postalCode=78040`;
@@ -938,69 +952,7 @@ router.get('/atributos/:categoria', async (req, res) => {
     return false; 
    }
   
-
-    // Función para obtener ASINs y última página (mismo código que antes)
-  /*async function obtenerASINsYUltimaPagina(url, paginaActual) {
-
-    try {
-      head = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Referer": "https://www.amazon.com.mx/"
-      }
-      let data = await unirest.get(url).headers(head)
-      const html = data.body;
-      const $ = cheerio.load(data.body);
-      let asins = [];
-      
-      $('[data-asin]').each((index, element) => {
-        const asin = $(element).attr('data-asin');  // Capturar el ASIN del producto
-        let prime = false;  // Inicializar prime como falso por defecto
-        
-        if (asin) {
-            // Buscar dentro del elemento si existe el ícono de Amazon Prime
-            const primeIcon = $(element).find('i[aria-label*="Prime"], span.aok-relative.s-prime');
-            if (primeIcon.length > 0) {
-                prime = true;  // El producto es Prime
-            }
-    
-            // Agregar el ASIN y el estado de Prime a la lista
-            asins.push({ asin, prime });
-            totalAsins.push({ asin, prime });
-          }
-      });
-  
-      let numerosPaginas = [];
-      $('span.s-pagination-strip').find('span.s-pagination-item').each((index, element) => {
-          const numero = $(element).text().trim();
-          if (!$(element).hasClass('s-pagination-button') && !isNaN(numero) && numero !== "") {
-              numerosPaginas.push(numero);
-          }
-      });
-  
-      const totalPaginas = numerosPaginas.length > 0 ? parseInt(numerosPaginas[numerosPaginas.length - 1], 10) : null;
-      if (maximaPagina<totalPaginas) {
-        maximaPagina = totalPaginas;
-      }
-      console.log('Total Paginas: ' + totalPaginas + ' Arreglo con paginas ' + numerosPaginas);
-      //console.log('Valores de pagina asins: ', asins)
-      console.log(`Página ${paginaActual}:`, asins);
-  
-      if (paginaActual < maximaPagina) {
-          const nuevaUrl = `${url.split('&page=')[0]}&page=${paginaActual + 1}`;
-          return obtenerASINsYUltimaPagina(nuevaUrl, paginaActual + 1);
-      } else {
-          return totalAsins;
-      }
-    } catch (error) {
-        console.error("Error en obtenerASINsYUltimaPagina:", error);
-        throw error; // Lanzar error para manejar en el manejador POST
-    }
-  }*/
-
-    async function obtenerASINsYUltimaPagina(url, paginaActual, totalAsins = []) {
+   /* async function obtenerASINsYUltimaPagina(url, paginaActual, totalAsins = []) {
       let maximaPagina = 0;
   
       try {
@@ -1062,7 +1014,7 @@ router.get('/atributos/:categoria', async (req, res) => {
           console.error("Error en obtenerASINsYUltimaPagina:", error);
           throw error;
       }
-  }
+  }*/
 
 //---------------------------------------------------------FUNCION TRADUCIR -------------------------------------------------------------------
   const verificarTamanoImagen = async (url, index) => {
@@ -1091,25 +1043,137 @@ router.get('/atributos/:categoria', async (req, res) => {
   };
 
 //---------------------------------------------------------FUNCION TRADUCIR -------------------------------------------------------------------
+let totalAsins = [];
+let productosPrime = [];
+let maximaPagina = 0;
+let bandera = false;
+let asins = [];
 
-/*apiKey = 'AIzaSyDAR9ZeT31Wk_mUG5K2GzfZV46UHBoER5k'; 
-endpoint = 'https://translation.googleapis.com/language/translate/v2';
+async function navigateAmazon(url, pagina = 1) {
+  bandera = false;
+  asins = [];
+  totalAsins = [];
+  productosPrime = [];
+  maximaPagina = 0;
 
-async function traducirFrase(texto, idiomaDestino) {
-  try {
-    const response = await axios.post(this.endpoint, null, {
-      params: {
-        q: texto,
-        target: idiomaDestino,
-        key: this.apiKey
-      }
-    });
-    return response.data.data.translations[0].translatedText;
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
 
-  } catch (error) {
-    console.error('Error al traducir:', error);
-    throw new Error('Error al traducir la frase.');
+  await page.setCookie({
+    name: 'session-id',
+    value: '147-9883528-3946037',
+    domain: '.amazon.com'
+  }, {
+    name: 'session-token',
+    value: '"CLWF0La3xShc2zvJOdDfzosq4pB07YVRgMxt5LihvyhwV11ggvTKxMpXYtYQ/EpdezEi3ZfrjGddpwCLdWQQd8h5fKWp+Oe0x5XjblOHpqk0JMoWfCcy86A97N4ktmb1W7H1g2uwX3IFIiSwKzyitfy4GsvacgkvtfMmqEx/pQN4Z1jicNtRXVVpn/2KTFH+8U7WkhtlxXgjwImE1Fp9VPEVRNDdS5TV+12hFuFK+0j25V6qdAB8rMknv/uZu5GZVqflr0KPzudLD4UbVpaanylwxlRR7RKdMepTCOmmoZc9Sh5WyPuADomgh6weZ7XDJWzhcAR+QYWD8v7jnXlNxtgKkdSnBLytIyPYx1ur0s7HbuH2d09kBg=="',
+    domain: '.amazon.com'
+  });
+
+  await page.goto('https://www.amazon.com');
+
+  await page.waitForSelector('#nav-global-location-popover-link');
+
+  await page.click('#nav-global-location-popover-link');
+
+   await page.waitForSelector('#GLUXZipUpdateInput', { visible: true });
+
+    // Llenar el código postal
+    await page.type('#GLUXZipUpdateInput', '78040', { delay: 100 });
+
+    // Hacer clic en el botón para actualizar
+    await page.click('#GLUXZipUpdate');
+
+  await new Promise(resolve => setTimeout(resolve, 5000));
+  await page.evaluate(() => {
+    const modalButton = document.querySelector('.a-popover-wrapper input.a-button-input#GLUXConfirmClose');
+    if (modalButton) {
+      modalButton.scrollIntoView();
+      modalButton.click();
+    }
+  });
+
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  let paginaActual = ''
+
+  while(!bandera){
+
+    console.log("url",url, paginaActual);
+    await page.goto(`${url}${paginaActual}`);
+
+    let html = await page.content();
+    const $ = cheerio.load(html);
+    let { pActual, pg } = await lecturahtml($, pagina)
+    paginaActual = pActual
+    pagina = pg
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    if ((paginaActual == null || paginaActual == '') && (pagina == null || pagina == '')) {
+      bandera = true;
+      console.log(productosPrime);
+      return productosPrime
+    }
   }
-}*/
+
+  await browser.close();
+}
+
+async function lecturahtml($, paginaActual){
+  $('[data-asin]').each((index, element) => {
+    const asin = $(element).attr('data-asin');
+    if (asin) {
+      asins.push(asin);
+      totalAsins.push(asin);
+      const esPrime = $(element).find('.a-icon-prime').length > 0;
+      const etiquetaEntrega = $(element).find('.udm-secondary-delivery-message .a-text-bold');
+      let entregaRapida = null;
+
+      if (etiquetaEntrega.length > 0) {
+        entregaRapida = etiquetaEntrega.text().trim(); // Capturamos el texto dentro del aria-label
+      }
+
+      console.log("asinasinasinasin",asin,esPrime,entregaRapida)
+      productosPrime.push({
+        asin: asin,
+        esPrime: esPrime,
+        entregaRapida: entregaRapida || null
+      })
+    }
+  });
+
+  let numerosPaginas = [];
+  $('span.s-pagination-strip').find('span.s-pagination-item').each((index, element) => {
+    const numero = $(element).text().trim();
+    if (!$(element).hasClass('s-pagination-button') && !isNaN(numero) && numero !== "") {
+      numerosPaginas.push(numero);
+    }
+  });
+
+  const totalPaginas = numerosPaginas.length > 0 ? parseInt(numerosPaginas[numerosPaginas.length - 1], 10) : null;
+  if (maximaPagina < totalPaginas) {
+    maximaPagina = totalPaginas;
+  }
+
+  if (paginaActual >= 10){
+    return {
+      pActual: '',
+      pg: ''
+    };
+  }
+  else if (paginaActual < maximaPagina) {
+    const paginacion = `&page=${paginaActual + 1}`
+    return {
+      pActual: paginacion,
+      pg: paginaActual + 1
+    };
+  } else {
+    return {
+      pActual: '',
+      pg: ''
+    };
+  }
+}
+
 
 module.exports = router;
